@@ -1,0 +1,161 @@
+/* Page layout */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f5f7fa;
+    color: #333;
+}
+
+.inbox-container {
+    max-width: 720px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    color: #222;
+}
+
+/* Forms */
+.add-link-form,
+.search-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.add-link-form input,
+.search-form input {
+    flex: 1;
+    padding: 12px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.add-link-form button,
+.search-form button {
+    padding: 12px 20px;
+    background: #4a90e2;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.add-link-form button:hover,
+.search-form button:hover {
+    background: #3b7ac0;
+}
+
+/* Sections */
+.link-section {
+    margin-top: 40px;
+}
+
+.link-section h2 {
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+    color: #444;
+}
+
+.empty {
+    color: #777;
+    font-style: italic;
+}
+
+/* Link list */
+.link-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.link-item {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    gap: 14px;
+}
+
+/* Favicon */
+.favicon {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+/* Link info */
+.link-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.link-info a {
+    font-size: 1rem;
+    color: #2c6ed5;
+    text-decoration: none;
+    margin-bottom: 4px;
+}
+
+.link-info a:hover {
+    text-decoration: underline;
+}
+
+.domain {
+    font-size: 0.85rem;
+    color: #777;
+}
+
+/* Actions */
+.link-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.link-actions form {
+    margin: 0;
+}
+
+.link-actions button {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.link-actions button:hover {
+    opacity: 0.8;
+}
+
+.mark-read {
+    background: #4caf50;
+    color: white;
+}
+
+.delete {
+    background: #e74c3c;
+    color: white;
+}
+
+/* Archive section styling */
+.link-list.archived .link-item {
+    opacity: 0.75;
+}
+
+.link-list.archived .link-item:hover {
+    opacity: 0.9;
+}
