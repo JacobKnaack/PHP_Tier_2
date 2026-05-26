@@ -22,8 +22,9 @@
             </form>
         <?php endif; ?>
 
-        <form action="/links/<?= $link['id'] ?>" method="DELETE" onsubmit="return confirm('Delete this link?')">
+        <form action="/links/<?= $link['id'] ?>" method="POST" onsubmit="return confirm('Delete this link?')">
             <input type="hidden" name="_method" value="DELETE">
+            <input type="hidden" name="return_to" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
             <button type="submit" class="delete">Delete</button>
         </form>
     </div>

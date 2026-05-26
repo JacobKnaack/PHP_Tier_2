@@ -40,6 +40,11 @@ class Router
 
     public function dispatch(string $method, string $uri)
     {
+        // Method override support
+        if ($method === 'POST' && isset($_POST['_method'])) {
+            $method = strtoupper($_POST['_method']);
+        }
+
         $path = parse_url($uri, PHP_URL_PATH);
 
         foreach ($this->routes as $route) {

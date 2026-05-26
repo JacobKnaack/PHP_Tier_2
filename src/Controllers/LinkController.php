@@ -74,7 +74,9 @@ class LinkController
     {
         $this->links->delete($id);
 
-        echo json_encode(['success' => true]);
+        $returnTo = $_POST['return_to'] ?? '/inbox';
+        header("Location: $returnTo");
+        exit;
     }
 
     /**
@@ -86,6 +88,8 @@ class LinkController
         $term = $_GET['q'] ?? '';
         $results = $this->links->search($term);
 
-        echo json_encode($results);
+        $links = $results; // Make results available to view
+
+        include __DIR__ . '/../../views/search.php';
     }
 }
