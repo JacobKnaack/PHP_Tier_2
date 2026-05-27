@@ -69,6 +69,16 @@ class ShortLinkService
         return null;
     }
 
+    public function findByLinkId(string $linkId): ?array
+    {
+        foreach ($this->loadShortlinks() as $sl) {
+            if ($sl['link_id'] === $linkId) {
+                return $sl;
+            }
+        }
+        return null;
+    }
+
     // Log analytics event for a short link
     public function logEvent(string $shorlinkId, array $data): void
     {

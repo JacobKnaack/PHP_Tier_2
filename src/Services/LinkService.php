@@ -93,9 +93,28 @@ class LinkService
         $links = $this->all();
 
         return array_values(array_filter($links, function ($link) use ($term) {
-            return str_contains(strtolower($link['title']), $term)
-                || str_contains(strtolower($link['url']), $term)
-                || str_contains(strtolower($link['domain']), $term);
+            $title  = strtolower($link['title']  ?? '');
+            $url    = strtolower($link['url']    ?? '');
+            $domain = strtolower($link['domain'] ?? '');
+
+            return str_contains($title, $term)
+                || str_contains($url, $term)
+                || str_contains($domain, $term);
         }));
     }
+
+    /**
+     * Find a link by ID
+      * @return array|null Returns the link record or null if not found
+     */
+    public function find(string $id): ?array
+    {
+        foreach ($this->all() as $link) {
+            if ($link['id'] === $id) {
+                return $link;
+            }
+        }
+        return null;
+}
+
 }
