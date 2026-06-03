@@ -6,7 +6,7 @@ $unread = array_filter($links, fn($l) => !$l['read']);
 $read   = array_filter($links, fn($l) =>  $l['read']);
 ?>
 
-<?php include __DIR__ . '/inbox-layout.php'; ?>
+<?php include __DIR__ . '/layout/inbox.php'; ?>
 <style>
     <?php include __DIR__ . '/../public/assets/styles/inbox-list.css'; ?>
 </style>

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Jacobk\PhpTier2\Controllers;
 
+use Jacobk\PhpTier2\Services\ShortLinkService;
 use Jacobk\PhpTier2\Services\LinkService;
 use Jacobk\PhpTier2\Services\MetadataService;
 
@@ -10,11 +11,16 @@ class LinkController
 {
     private LinkService $links;
     private MetadataService $meta;
+    private ShortLinkService $shortLinkService;
 
     public function __construct()
     {
         $this->links = new LinkService(__DIR__ . '/../../data/links.json');
         $this->meta  = new MetadataService();
+        $this->shortLinkService = new ShortLinkService(
+            __DIR__ . '/../../data/shortlinks.json',
+            __DIR__ . '/../../data/events.json'
+        );
     }
 
     /**
@@ -72,6 +78,8 @@ class LinkController
      */
     public function destroy(string $id)
     {
+        $this->shortLinkService->deleteByLinkId($id);
+
         $this->links->delete($id);
 
         $returnTo = $_POST['return_to'] ?? '/inbox';

@@ -1,7 +1,7 @@
 
 <?php
 /** @var array $links */
-include __DIR__ . '/inbox-layout.php';
+include __DIR__ . './layout/inbox.php';
 ?>
 
 <style>

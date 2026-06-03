@@ -24,6 +24,9 @@ composer.phar
 # Build data
 /build/
 
+# local db files
+/data/
+
 # Environment variables
 .env
 

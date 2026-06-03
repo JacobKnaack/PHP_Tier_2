@@ -103,6 +103,31 @@ class ShortLinkService
         ));
     }
 
+    /**
+     * Removes a short link when its associated link is deleted
+     */
+    public function deleteByLinkId(string $linkId): void
+    {
+        $shortlinks = $this->loadShortLinks();
+        $events = $this->loadEvents();
+
+        $found = null;
+        foreach ($shortlinks as $sl) {
+            if ($sl['link_id'] === $linkId) {
+                $found = $sl;
+                break;
+            }
+        }
+
+        if ($found) {
+            // remove shortlink and associated events
+            $shortlinks = array_filter($shortlinks, fn($sl) => $sl['id'] !== $found['id']);
+            $this->saveShortLinks($shortlinks);
+            $events = array_filter($events, fn($e) => $e['shortlink_id'] !== $found['id']);
+            $this->saveEvents($events);
+        }
+    }
+
     private function codeExists(string $code, array $shortlinks): bool
     {
         foreach ($shortlinks as $link) {

@@ -16,6 +16,8 @@
     </div>
 
     <div class="link-actions">
+        <a href="/links/<?= $link['id'] ?>/share" class="share-btn">Share</a>
+
         <?php if (!$link['read']): ?>
             <form action="/links/<?= $link['id'] ?>/read" method="POST">
                 <button type="submit" class="mark-read">Mark Read</button>
