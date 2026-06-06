@@ -3,56 +3,31 @@ declare(strict_types=1);
 
 namespace Jacobk\PhpTier2\Services;
 
+use Jacobk\PhpTier2\Repositories\LinkRepositoryInterface;
+
 class LinkService
 {
-    private string $file;
+    private LinkRepositoryInterface $repository;
 
-    public function __construct(string $file)
+    public function __construct(LinkRepositoryInterface $repository)
     {
-        $this->file = $file;
-
-        // Ensure file exists
-        if (!file_exists($file)) {
-            file_put_contents($file, json_encode([]));
-        }
+        $this->repository = $repository;
     }
 
     /**
-     * Load all links from JSON
+     * Load all links from the repository
      */
     public function all(): array
     {
-        $json = file_get_contents($this->file);
-        return json_decode($json, true) ?? [];
-    }
-
-    /**
-     * Save array of links back to JSON
-     */
-    private function save(array $links): void
-    {
-        file_put_contents($this->file, json_encode($links, JSON_PRETTY_PRINT));
+        return $this->repository->all();
     }
 
     /**
      * Add a new link
      */
-    public function add(string $url, array $metadata): void
+    public function add(string $url, array $metadata): array
     {
-        $links = $this->all();
-
-        $links[] = [
-            'id'         => uniqid('', true),
-            'url'        => $url,
-            'title'      => $metadata['title'] ?? $url,
-            'favicon'    => $metadata['favicon'] ?? null,
-            'domain'     => $metadata['domain'] ?? null,
-            'created_at' => date('c'),
-            'read'       => false,
-            'tags'       => []
-        ];
-
-        $this->save($links);
+        return $this->repository->add($url, $metadata);
     }
 
     /**
@@ -60,16 +35,7 @@ class LinkService
      */
     public function markRead(string $id): void
     {
-        $links = $this->all();
-
-        foreach ($links as &$link) {
-            if ($link['id'] === $id) {
-                $link['read'] = true;
-                break;
-            }
-        }
-
-        $this->save($links);
+        $this->repository->markRead($id);
     }
 
     /**
@@ -77,11 +43,7 @@ class LinkService
      */
     public function delete(string $id): void
     {
-        $links = $this->all();
-
-        $links = array_filter($links, fn($link) => $link['id'] !== $id);
-
-        $this->save(array_values($links));
+        $this->repository->delete($id);
     }
 
     /**
@@ -89,18 +51,7 @@ class LinkService
      */
     public function search(string $term): array
     {
-        $term = strtolower($term);
-        $links = $this->all();
-
-        return array_values(array_filter($links, function ($link) use ($term) {
-            $title  = strtolower($link['title']  ?? '');
-            $url    = strtolower($link['url']    ?? '');
-            $domain = strtolower($link['domain'] ?? '');
-
-            return str_contains($title, $term)
-                || str_contains($url, $term)
-                || str_contains($domain, $term);
-        }));
+        return $this->repository->search($term);
     }
 
     /**
@@ -109,12 +60,6 @@ class LinkService
      */
     public function find(string $id): ?array
     {
-        foreach ($this->all() as $link) {
-            if ($link['id'] === $id) {
-                return $link;
-            }
-        }
-        return null;
-}
-
+        return $this->repository->find($id);
+    }
 }

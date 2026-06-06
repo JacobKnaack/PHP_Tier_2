@@ -2,6 +2,8 @@
 
 use PHPUnit\Framework\TestCase;
 use Jacobk\PhpTier2\Services\ShortLinkService;
+use Jacobk\PhpTier2\Repositories\JsonShortLinkRepository;
+use Jacobk\PhpTier2\Repositories\JsonShortLinkEventRepository;
 
 class ShortLinkServiceTest extends TestCase {
     private string $shortlinksFile;
@@ -18,8 +20,8 @@ class ShortLinkServiceTest extends TestCase {
         file_put_contents($this->shortlinksFile, json_encode([]));
         file_put_contents($this->eventsFile, json_encode([]));
         $this->service = new ShortLinkService(
-            $this->shortlinksFile,
-            $this->eventsFile
+            new JsonShortLinkRepository($this->shortlinksFile),
+            new JsonShortLinkEventRepository($this->eventsFile)
         );
     }
 

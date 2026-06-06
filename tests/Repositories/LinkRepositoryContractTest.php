@@ -58,10 +58,10 @@ abstract class LinkRepositoryContractTest extends TestCase
     {
         $repo = $this->repository();
 
-        $repo->add('https://example.com', ['title' => 'Example Site']);
+        $repo->add('https://search-example.com', ['title' => 'Example Site']);
         $repo->add('https://test.com', ['title' => 'Test Site']);
 
-        $results = $repo->search('example');
+        $results = $repo->search('search');
 
         $this->assertCount(1, $results);
         $this->assertSame('Example Site', $results[0]['title']);

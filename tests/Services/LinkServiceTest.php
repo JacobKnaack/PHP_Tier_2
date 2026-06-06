@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 use Jacobk\PhpTier2\Services\LinkService;
+use Jacobk\PhpTier2\Repositories\JsonLinkRepository;
 
 class LinkServiceTest extends TestCase {
     private string $dataDir;
@@ -18,7 +19,7 @@ class LinkServiceTest extends TestCase {
 
         $this->linksFile = $this->dataDir . '/test_links.json';
         file_put_contents($this->linksFile, json_encode([]));
-        $this->service = new LinkService($this->linksFile);
+        $this->service = new LinkService(new JsonLinkRepository($this->linksFile));
     }
 
     protected function tearDown(): void {

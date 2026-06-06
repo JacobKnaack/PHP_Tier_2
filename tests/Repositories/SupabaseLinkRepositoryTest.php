@@ -7,15 +7,30 @@ use Jacobk\PhpTier2\Repositories\LinkRepositoryInterface;
 
 class SupabaseLinkRepositoryTest extends LinkRepositoryContractTest
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $url = $_ENV['SUPABASE_URL'];
+        $key = $_ENV['SUPABASE_SERVICE_ROLE_KEY'];
+        $schema = $_ENV['SUPABASE_SCHEMA'];
+    
+        if ($url && $key && $schema) {
+            $repo = new SupabaseLinkRepository($url, $key, $schema);
+            $repo->rawSql("truncate table {$schema}.links restart identity cascade");
+        }
+    }
+
     protected function repository(): LinkRepositoryInterface
     {
-        $url = getenv('SUPABASE_URL');
-        $key = getenv('SUPABASE_KEY');
+        $url = $_ENV['SUPABASE_URL'];
+        $key = $_ENV['SUPABASE_SERVICE_ROLE_KEY'];
+        $schema = $_ENV['SUPABASE_SCHEMA'];
 
-        if (!$url || !$key) {
-            $this->markTestSkipped('Supabase credentials not set in environment variables.');
+        if (!$url || !$key || !$schema) {
+            $this->markTestSkipped('Supabase environment variables not set in test environment.');
         }
 
-        return new SupabaseLinkRepository($url, $key);
+        return new SupabaseLinkRepository($url, $key, $schema);
     }
 }
