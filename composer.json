@@ -15,8 +15,8 @@
         }
     ],
     "scripts": {
-        "start": "php -S 127.0.0.1:8888 -t public/",
-        "test": "php ./watch_tests.php"
+        "start": "@php -S 127.0.0.1:8888 -t public/",
+        "test": "@php ./watch_tests.php"
     },
     "config": {
         "process-timeout": 0
