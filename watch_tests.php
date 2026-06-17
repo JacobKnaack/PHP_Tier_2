@@ -29,6 +29,14 @@ function latestMTime(array $paths_array) {
 
 echo "Watching for changes...\n";
 
+// Windows-safe Ctrl+C handler
+if (function_exists('sapi_windows_set_ctrl_handler')) {
+    sapi_windows_set_ctrl_handler(function() {
+        echo "\nExiting watcher...\n";
+        exit(0); // exit cleanly so Composer doesn't complain
+    });
+}
+
 while (true) {
     $current = latestMTime($paths);
     if ($current > $last) {
