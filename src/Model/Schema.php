@@ -17,6 +17,11 @@ class Schema
     {
         $type = strtoupper($def['type'] ?? 'TEXT');
 
+        // ENUM support (SQLite emulation)
+        if ($type === 'ENUM') {
+            $type = 'TEXT'; // SQLite fallback
+        }
+
         $parts = ["$name $type"];
 
         if (($def['primary'] ?? false) === true) {
@@ -24,12 +29,18 @@ class Schema
         }
 
         if (($def['autoIncrement'] ?? false) === true) {
-            // SQLite syntax; you can branch for MySQL/Postgres later
-            $parts[] = "AUTOINCREMENT";
+            $parts[] = "AUTOINCREMENT"; // SQLITE specific
         }
 
         if (($def['nullable'] ?? true) === false) {
             $parts[] = "NOT NULL";
+        }
+
+        // ENUM CHECK constraint
+        if (($def['type'] ?? '') === 'enum') {
+            $values = $def['values'] ?? [];
+            $quoted = array_map(fn($v) => "'$v'", $values);
+            $parts[] = "CHECK($name IN (" . implode(', ', $quoted) . "))";
         }
 
         if (isset($def['default'])) {

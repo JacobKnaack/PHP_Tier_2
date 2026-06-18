@@ -11,6 +11,12 @@ class IssueRepository
     private IssueModel $model;
     private Schema $schema;
 
+    public function __construct(IssueModel $model, Schema $schema)
+    {
+        $this->model = $model;
+        $this->schema = $schema;
+    }
+
     public function init(): void
     {
         $this->schema->createTable('issues', IssueModel::schema());

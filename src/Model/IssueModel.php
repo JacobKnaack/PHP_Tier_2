@@ -24,7 +24,8 @@ class IssueModel extends Model
                 'nullable' => false,
             ],
             'status' => [
-                'type' => 'text',
+                'type' => 'ENUM',
+                'values' => ['open', 'closed'],
                 'default' => 'open',
             ],
             'created_at' => [
