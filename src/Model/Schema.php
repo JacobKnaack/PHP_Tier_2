@@ -13,36 +13,75 @@ class Schema
         $this->pdo = $pdo;
     }
 
-    static function buildColumnSql(string $name, array $def): string
+    private function driver(): string
     {
-        $type = strtoupper($def['type'] ?? 'TEXT');
+        return $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    }
 
-        // ENUM support (SQLite emulation)
-        if ($type === 'ENUM') {
-            $type = 'TEXT'; // SQLite fallback
+    private function buildEnum(string $name, array $values): string
+    {
+        $driver = $this->driver();
+        if ($driver === 'sqlite') {
+            $quoted = array_map(fn($v) => "'$v'", $values);
+            return "TEXT CHECK($name IN (" . implode(', ', $quoted) . "))";
         }
 
-        $parts = ["$name $type"];
+        if ($driver === 'mysql') {
+            $quoted = array_map(fn($v) => "'$v'", $values);
+            return "ENUM(" . implode(', ', $quoted) . ")";
+        }
 
+        if ($driver === 'pgsql') {
+            // Inline CHECK is simplest for now
+            $quoted = array_map(fn($v) => "'$v'", $values);
+            return "TEXT CHECK($name IN (" . implode(', ', $quoted) . "))";
+        }
+
+        throw new \RuntimeException("Unsupported driver: $driver");
+    }
+
+    private function buildAutoIncrement(): string
+    {
+        $driver = $this->driver();
+
+        return match ($driver) {
+            'sqlite' => 'AUTOINCREMENT',
+            'mysql' => 'AUTO_INCREMENT',
+            'pgsql' => 'GENERATED ALWAYS AS IDENTITY',
+            default => throw new \RuntimeException("Unsupported driver: $driver"),
+        };
+    }
+
+    public function buildColumnSql(string $name, array $def): string
+    {
+        $rawType = strtolower($def['type'] ?? 'text');
+
+        // ENUM handling
+        if ($rawType === 'enum') {
+            $typeSql = $this->buildEnum($name, $def['values']);
+            $parts = ["$name $typeSql"];   // FIX: prepend column name
+        } else {
+            $typeSql = strtoupper($rawType);
+            $parts = ["$name $typeSql"];
+        }
+
+        // Primary key
         if (($def['primary'] ?? false) === true) {
             $parts[] = "PRIMARY KEY";
         }
 
-        if (($def['autoIncrement'] ?? false) === true) {
-            $parts[] = "AUTOINCREMENT"; // SQLITE specific
+        // Auto increment (support both autoIncrement and autoincrement)
+        $auto = $def['autoIncrement'] ?? $def['autoincrement'] ?? false;
+        if ($auto === true) {
+            $parts[] = $this->buildAutoIncrement();
         }
 
+        // Nullability
         if (($def['nullable'] ?? true) === false) {
             $parts[] = "NOT NULL";
         }
 
-        // ENUM CHECK constraint
-        if (($def['type'] ?? '') === 'enum') {
-            $values = $def['values'] ?? [];
-            $quoted = array_map(fn($v) => "'$v'", $values);
-            $parts[] = "CHECK($name IN (" . implode(', ', $quoted) . "))";
-        }
-
+        // Default
         if (isset($def['default'])) {
             $default = $def['default'];
             $parts[] = "DEFAULT " . (is_string($default) ? "'$default'" : $default);
@@ -56,7 +95,7 @@ class Schema
         $columnSql = [];
 
         foreach ($columns as $name => $definition) {
-            $columnSql[] = Schema::buildColumnSql($name, $definition);
+            $columnSql[] = $this->buildColumnSql($name, $definition);
         }
 
         $sql = sprintf(

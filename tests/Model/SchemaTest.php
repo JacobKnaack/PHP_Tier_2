@@ -21,6 +21,8 @@ class SchemaTest extends TestCase
 
     public function testCreateTableSuccess(): void
     {
+
+
         $this->schema->createTable('users', [
             'id' => [
                 'type'=>'integer',
@@ -47,7 +49,7 @@ class SchemaTest extends TestCase
 
     public function testBuildColumnSqlGeneratesSqlCorrectly(): void
     {
-        $sql = Schema::buildColumnSql('id', [
+        $sql = $this->schema->buildColumnSql('id', [
             'type' => 'integer',
             'primary' => true,
             'autoIncrement' => true,
@@ -62,13 +64,27 @@ class SchemaTest extends TestCase
 
     public function testBuildColumnSqlHandlesDefaults(): void
     {
-        $sql = Schema::buildColumnSql('role', [
+        $sql = $this->schema->buildColumnSql('role', [
             'type' => 'text',
             'default' => 'guest',
         ]);
 
         $this->assertEquals(
             "role TEXT DEFAULT 'guest'",
+            $sql
+        );
+    }
+
+    public function testBuildColumnSqlHandlesEnum(): void
+    {
+        $sql = $this->schema->buildColumnSql('status', [
+            'type' => 'enum',
+            'values' => ['open', 'closed'],
+            'default' => 'open',
+        ]);
+
+        $this->assertEquals(
+            "status TEXT CHECK(status IN ('open', 'closed')) DEFAULT 'open'",
             $sql
         );
     }
